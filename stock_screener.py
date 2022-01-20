@@ -31,9 +31,9 @@ with sensex:
     percent_change_sensex = (sensex_df['Close'].iloc[-1] - sensex_df_yesterday['Close'].iloc[-1]) / (sensex_df['Close'].iloc[-1]) * 100
     percent_change_sensex = round(percent_change_sensex, 2)
     if percent_change_sensex > 0:
-        st.write("Sensex is up by {}%".format(percent_change_sensex))
+        st.write("Sensex Index is up by {}%".format(percent_change_sensex))
     else:
-        st.write("Sensex is down by {}%".format(percent_change_sensex))
+        st.write("Sensex Index is down by {}%".format(percent_change_sensex))
 
 todays_stock, stocks, indicators, int_stocks = st.tabs(
     ["Stock price for Today ", "Historical Price of Stock", "Indicators", "International Stocks"])
