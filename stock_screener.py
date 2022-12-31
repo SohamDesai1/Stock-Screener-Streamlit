@@ -1,4 +1,3 @@
-from math import floor
 import streamlit as st
 import pandas as pd
 import datetime
@@ -13,8 +12,13 @@ df = pd.DataFrame()
 
 st.header("S&P BSE SENSEX")
 today = datetime.date.today()
+if today.weekday() == 5:
+    today = today - datetime.timedelta(days=1)
+elif today.weekday() == 6:
+    today = today - datetime.timedelta(days=2)
+ 
 sensex = yf.download("^BSESN",start=today, interval="5m")
-sensex_current = floor(sensex['Close'].iloc[-1])
+sensex_current = sensex['Close'].iloc[-1]
 st.write(f"Current Price: {sensex_current}")
 fig = make_subplots(rows=2, cols=1, shared_xaxes=True, vertical_spacing=0.03, row_heights=[
                             0.7, 0.3], specs=[[{"type": "candlestick"}], [{"type": "bar"}]])
@@ -26,7 +30,7 @@ st.plotly_chart(fig, use_container_width=True)
 
 st.header("NIFTY 50")
 nifty = yf.download("^NSEI",start=today, interval="5m")
-nifty_current = floor(nifty['Close'].iloc[-1])
+nifty_current = nifty['Close'].iloc[-1]
 st.write(f"Current Price: {nifty_current}")
 fig = make_subplots(rows=2, cols=1, shared_xaxes=True, vertical_spacing=0.03, row_heights=[
                             0.7, 0.3], specs=[[{"type": "candlestick"}], [{"type": "bar"}]])
@@ -40,9 +44,16 @@ todays_stock, stocks, indicators = st.tabs(
 
 with todays_stock:
     st.title("Today's Price of Stock")
+    today = datetime.date.today()
+    if today.weekday() == 5:
+        today = today - datetime.timedelta(days=1)
+        st.write("Market is closed on Saturday.")
+    elif today.weekday() == 6:
+        today = today - datetime.timedelta(days=2)
+        st.write("Market is closed on Sunday.")
     stock = st.text_input("Enter a stock ticker symbol", "LT")
     Today_stock = st.button("Get Today's Price")
-    today = datetime.date.today()
+
     if Today_stock:
         start_date = today
         df = yf.download(f"{stock}.NS", start=start_date, interval="2m")
@@ -62,12 +73,18 @@ with todays_stock:
 
 with stocks:
     st.title("Stocks")
+    today_date = datetime.date.today() + datetime.timedelta(days=1)
+    if today_date.weekday() == 5:
+        today_date = today_date - datetime.timedelta(days=1)
+        st.write("Market is closed ")
+    elif today_date.weekday() == 6:
+        today_date = today_date - datetime.timedelta(days=2)
+        st.write("Market is closed ")
     stock_name = st.text_input("Enter a stock ticker symbol")
     start_date = st.date_input("Start date")
     goto_today = st.button("Get Price from start date till today")
     end_date = st.date_input("End date")
     get_stock = st.button("Get Stock Price")
-    today_date = datetime.date.today() + datetime.timedelta(days=1)
     if end_date < start_date:
         st.error("Error: End date must fall after start date.")
     elif goto_today:
