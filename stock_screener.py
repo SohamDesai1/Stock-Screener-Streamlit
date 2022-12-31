@@ -29,6 +29,11 @@ st.plotly_chart(fig, use_container_width=True)
 
 
 st.header("NIFTY 50")
+today = datetime.date.today()
+if today.weekday() == 5:
+    today = today - datetime.timedelta(days=1)
+elif today.weekday() == 6:
+    today = today - datetime.timedelta(days=2)
 nifty = yf.download("^NSEI",start=today, interval="5m")
 nifty_current = nifty['Close'].iloc[-1]
 st.write(f"Current Price: {nifty_current}")
