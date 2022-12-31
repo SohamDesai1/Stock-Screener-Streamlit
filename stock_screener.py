@@ -45,17 +45,17 @@ with todays_stock:
 
     if Today_stock:
         start_date = today
-        df = yf.download(f"{stock}.NS", start=start_date, interval="2m")
-        df['% Change'] = df['Close'].pct_change()*100
-        df['% Change'] = df['% Change'].round(2)
-        st.write(df)
+        df_today = yf.download(f"{stock}.NS", start=start_date, interval="2m")
+        df_today['% Change'] = df_today['Close'].pct_change()*100
+        df_today['% Change'] = df_today['% Change'].round(2)
+        st.write(df_today)
         fig = make_subplots(rows=2, cols=1, shared_xaxes=True, vertical_spacing=0.03, row_heights=[
                             0.7, 0.3], specs=[[{"type": "candlestick"}], [{"type": "bar"}]])
         fig.update_xaxes(rangeslider_visible=False)
-        fig.add_trace(go.Candlestick(x=df.index, open=df['Open'], high=df['High'],
-                      low=df['Low'], close=df['Close'], name='market data'), row=1, col=1)
+        fig.add_trace(go.Candlestick(x=df_today.index, open=df_today['Open'], high=df_today['High'],
+                      low=df_today['Low'], close=df_today['Close'], name='market data'), row=1, col=1)
         fig.add_trace(
-            go.Bar(x=df.index, y=df['Volume'], name='Volume'), row=2, col=1)
+            go.Bar(x=df_today.index, y=df_today['Volume'], name='Volume'), row=2, col=1)
 
         st.plotly_chart(fig, use_container_width=True)
 
@@ -78,10 +78,10 @@ with stocks:
         st.error("Error: End date must fall after start date.")
     elif goto_today:
         end_date = today_date
-        df = yf.download(f"{stock}.NS", start=start_date,
+        df_stock = yf.download(f"{stock}.NS", start=start_date,
                          end=end_date, interval="15m")
-        df.style.set_properties(**{'text-align': 'left'})
-        st.write(df)
+        df_stock.style.set_properties(**{'text-align': 'left'})
+        st.write(df_stock)
         fig = make_subplots(rows=2, cols=1, shared_xaxes=True, vertical_spacing=0.03, row_heights=[
                             0.7, 0.3], specs=[[{"type": "candlestick"}], [{"type": "bar"}]])
         fig.update_xaxes(rangeslider_visible=False)
@@ -92,17 +92,17 @@ with stocks:
             ]
         )
 
-        fig.add_trace(go.Candlestick(x=df.index, open=df['Open'], high=df['High'],
-                      low=df['Low'], close=df['Close'], name='market data'), row=1, col=1)
+        fig.add_trace(go.Candlestick(x=df_stock.index, open=df_stock['Open'], high=df_stock['High'],
+                      low=df_stock['Low'], close=df_stock['Close'], name='market data'), row=1, col=1)
         fig.add_trace(
-            go.Bar(x=df.index, y=df['Volume'], name='Volume'), row=2, col=1)
+            go.Bar(x=df_stock.index, y=df_stock['Volume'], name='Volume'), row=2, col=1)
 
         st.plotly_chart(fig, use_container_width=True)
     elif get_stock:
-        df = yf.download(f"{stock}.NS", start=start_date,
+        df_get_stock = yf.download(f"{stock}.NS", start=start_date,
                          end=end_date+datetime.timedelta(days=1), interval="15m")
-        df.style.set_properties(**{'text-align': 'left'})
-        st.write(df)
+        df_get_stock.style.set_properties(**{'text-align': 'left'})
+        st.write(df_get_stock)
         fig = make_subplots(rows=2, cols=1, shared_xaxes=True, vertical_spacing=0.03, row_heights=[
                             0.7, 0.3], specs=[[{"type": "candlestick"}], [{"type": "bar"}]])
         fig.update_xaxes(rangeslider_visible=False)
@@ -113,11 +113,11 @@ with stocks:
             ]
         )
 
-        fig.add_trace(go.Candlestick(x=df.index, open=df['Open'], high=df['High'],
-                      low=df['Low'], close=df['Close'], name='market data'), row=1, col=1)
+        fig.add_trace(go.Candlestick(x=df_get_stock.index, open=df_get_stock['Open'], high=df_get_stock['High'],
+                      low=df_get_stock['Low'], close=df_get_stock['Close'], name='market data'), row=1, col=1)
         # bar chart
         fig.add_trace(
-            go.Bar(x=df.index, y=df['Volume'], name='Volume'), row=2, col=1)
+            go.Bar(x=df_get_stock.index, y=df_get_stock['Volume'], name='Volume'), row=2, col=1)
 
         st.plotly_chart(fig, use_container_width=True)
 
