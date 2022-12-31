@@ -8,25 +8,6 @@ from plotly.subplots import make_subplots
 
 st.title("Stock Price Screener and Analysis")
 pd.set_option('max_colwidth', 400)
-df = pd.DataFrame()
-
-st.header("S&P BSE SENSEX")
-today = datetime.date.today()
-if today.weekday() == 5:
-    today = today - datetime.timedelta(days=1)
-elif today.weekday() == 6:
-    today = today - datetime.timedelta(days=2)
- 
-sensex = yf.download("^BSESN",start=today, interval="5m")
-sensex_current = sensex['Close'].iloc[-1]
-st.write(f"Current Price: {sensex_current}")
-fig = make_subplots(rows=2, cols=1, shared_xaxes=True, vertical_spacing=0.03, row_heights=[
-                            0.7, 0.3], specs=[[{"type": "candlestick"}], [{"type": "bar"}]])
-fig.update_xaxes(rangeslider_visible=False)
-fig.add_trace(go.Candlestick(x=sensex.index, open=sensex['Open'], high=sensex['High'],
-                        low=sensex['Low'], close=sensex['Close'], name='market data'), row=1, col=1)
-st.plotly_chart(fig, use_container_width=True)
-
 
 todays_stock, stocks, indicators = st.tabs(
     ["Stock price for Today ", "Historical Price of Stock", "Indicators"])
