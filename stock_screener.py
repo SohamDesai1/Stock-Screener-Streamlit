@@ -151,7 +151,7 @@ with indicators:
         
     if button_clicked:
         df1 = pd.DataFrame()
-        df1 = df.ta.ticker(f"{stock_name}.NS", period="1y", asobject=True)
+        df1 = df1.ta.ticker(f"{stock_name}.NS", period="1y", asobject=True)
         df1.ta.strategy(category)
         df1 = df1.drop(columns=['Stock Splits', 'Dividends'])
         st.write(df1)
