@@ -60,14 +60,14 @@ with stocks:
     elif goto_today:
         end_date = today_date
         diff = end_date - start_date
-        if diff.days <= 365 or 180 > diff.days < 365:
+        if 180 > diff.days < 365 and diff.days > 90:
             interval = "1d"
+        # bteween 30 days and 90 days interval is 90 minutes
         elif 90 >= diff.days >= 30:
-            interval = "90m"
+            interval = "60m"
+        # between 365 days and 730 days interval is 1 week
         elif 365 < diff.days > 730:
             interval = "1wk"
-        else:
-            interval = "1h"
         st.write(interval)
         df_stock = yf.download(f"{stock}.NS", start=start_date,
                                end=end_date, interval=interval)
@@ -76,12 +76,18 @@ with stocks:
         fig = make_subplots(rows=2, cols=1, shared_xaxes=True, vertical_spacing=0.03, row_heights=[
                             0.7, 0.3], specs=[[{"type": "candlestick"}], [{"type": "bar"}]])
         fig.update_xaxes(rangeslider_visible=False)
-        fig.update_xaxes(
-            rangebreaks=[
-                dict(bounds=["sat", "mon"]),
-                # dict(pattern='hour', bounds=[16, 9])
-            ]
-        )
+        if interval == "1wk":
+            fig.update_xaxes(
+                rangebreaks=[
+                    dict(bounds=["sat", "mon"]),]
+            )
+        else:
+            fig.update_xaxes(
+                rangebreaks=[
+                    dict(bounds=["sat", "mon"]),
+                    dict(pattern='hour', bounds=[16, 9])
+                ]
+            )
 
         fig.add_trace(go.Candlestick(x=df_stock.index, open=df_stock['Open'], high=df_stock['High'],
                                      low=df_stock['Low'], close=df_stock['Close'], name='market data'), row=1, col=1)
@@ -93,14 +99,14 @@ with stocks:
     elif get_stock:
         # get the difference between the two dates
         diff = end_date - start_date
-        if diff.days <= 365 or 180 > diff.days < 365:
+        if 180 > diff.days < 365 and diff.days > 90:
             interval = "1d"
+        # bteween 30 days and 90 days interval is 90 minutes
         elif 90 >= diff.days >= 30:
-            interval = "90m"
+            interval = "60m"
+        # between 365 days and 730 days interval is 1 week
         elif 365 < diff.days > 730:
             interval = "1wk"
-        else:
-            interval = "1h"
         st.write(interval)
         df_get_stock = yf.download(f"{stock}.NS", start=start_date,
                                    end=end_date+datetime.timedelta(days=1), interval=interval)
@@ -109,12 +115,18 @@ with stocks:
         fig = make_subplots(rows=2, cols=1, shared_xaxes=True, vertical_spacing=0.03, row_heights=[
                             0.7, 0.3], specs=[[{"type": "candlestick"}], [{"type": "bar"}]])
         fig.update_xaxes(rangeslider_visible=False)
-        fig.update_xaxes(
-            rangebreaks=[
-                dict(bounds=["sat", "mon"]),
-                # dict(pattern='hour', bounds=[16, 9])
-            ]
-        )
+        if interval == "1wk":
+            fig.update_xaxes(
+                rangebreaks=[
+                    dict(bounds=["sat", "mon"]),]
+            )
+        else:
+            fig.update_xaxes(
+                rangebreaks=[
+                    dict(bounds=["sat", "mon"]),
+                    dict(pattern='hour', bounds=[16, 9])
+                ]
+            )
 
         fig.add_trace(go.Candlestick(x=df_get_stock.index, open=df_get_stock['Open'], high=df_get_stock['High'],
                       low=df_get_stock['Low'], close=df_get_stock['Close'], name='market data'), row=1, col=1)
