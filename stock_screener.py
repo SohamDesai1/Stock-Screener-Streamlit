@@ -65,21 +65,22 @@ with stocks:
         # bteween 30 days and 90 days interval is 90 minutes
         elif 90 >= diff.days >= 30:
             interval = "60m"
-        # between 365 days and 730 days interval is 1 week
-        elif 365 < diff.days > 730:
+        elif diff.days > 365:
             interval = "1wk"
-        st.write(interval)
+        
         df_stock = yf.download(f"{stock}.NS", start=start_date,
                                end=end_date, interval=interval)
         df_stock.style.set_properties(**{'text-align': 'left'})
         st.write(df_stock)
+        st.write("The time interval for plotting of chart is :",interval)
         fig = make_subplots(rows=2, cols=1, shared_xaxes=True, vertical_spacing=0.03, row_heights=[
                             0.7, 0.3], specs=[[{"type": "candlestick"}], [{"type": "bar"}]])
         fig.update_xaxes(rangeslider_visible=False)
-        if interval == "1wk":
+        if interval == "1wk" or interval == "1d":
             fig.update_xaxes(
                 rangebreaks=[
-                    dict(bounds=["sat", "mon"]),]
+                    dict(bounds=["sat", "mon"]),
+                ]
             )
         else:
             fig.update_xaxes(
@@ -104,18 +105,19 @@ with stocks:
         # bteween 30 days and 90 days interval is 90 minutes
         elif 90 >= diff.days >= 30:
             interval = "60m"
-        # between 365 days and 730 days interval is 1 week
-        elif 365 < diff.days > 730:
+        elif diff.days > 365:
             interval = "1wk"
-        st.write(interval)
+        
+        
         df_get_stock = yf.download(f"{stock}.NS", start=start_date,
                                    end=end_date+datetime.timedelta(days=1), interval=interval)
         df_get_stock.style.set_properties(**{'text-align': 'left'})
         st.write(df_get_stock)
+        st.write("The time interval for plotting of chart is :",interval)
         fig = make_subplots(rows=2, cols=1, shared_xaxes=True, vertical_spacing=0.03, row_heights=[
                             0.7, 0.3], specs=[[{"type": "candlestick"}], [{"type": "bar"}]])
         fig.update_xaxes(rangeslider_visible=False)
-        if interval == "1wk":
+        if interval == "1wk" or interval == "1d":
             fig.update_xaxes(
                 rangebreaks=[
                     dict(bounds=["sat", "mon"]),]
