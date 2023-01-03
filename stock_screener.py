@@ -62,6 +62,7 @@ with stocks:
         diff = end_date - start_date
         if 180 > diff.days < 365 and diff.days > 90:
             interval = "1d"
+        # bteween 30 days and 90 days interval is 90 minutes
         elif 90 >= diff.days >= 30:
             interval = "60m"
         elif diff.days > 365:
@@ -101,6 +102,7 @@ with stocks:
         diff = end_date - start_date
         if 180 > diff.days < 365 and diff.days > 90:
             interval = "1d"
+        # bteween 30 days and 90 days interval is 90 minutes
         elif 90 >= diff.days >= 30:
             interval = "60m"
         elif diff.days > 365:
