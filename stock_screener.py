@@ -10,6 +10,13 @@ st.title("Stock Price Screener and Analysis")
 
 nifty,sensex = st.columns(2)
 today = datetime.date.today()
+if today.weekday() == 5:
+    today = today - datetime.timedelta(days=1)
+    st.write("Market is closed on Saturday.")
+elif today.weekday() == 6:
+    today = today - datetime.timedelta(days=2)
+    st.write("Market is closed on Sunday.")
+    
 with nifty:
     st.header("Nifty 50")
     nifty_df = pd.DataFrame()
