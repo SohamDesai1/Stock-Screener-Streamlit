@@ -7,29 +7,10 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 st.title("Stock Price Screener and Analysis")
+pd.set_option('max_colwidth', 400)
 
-nifty,sensex = st.columns(2)
-today = datetime.date.today()
-if today.weekday() == 5:
-    today = today - datetime.timedelta(days=1)
-    st.write("Market is closed on Saturday.")
-elif today.weekday() == 6:
-    today = today - datetime.timedelta(days=2)
-    st.write("Market is closed on Sunday.")
-    
-with nifty:
-    st.header("Nifty 50")
-    nifty_df = pd.DataFrame()
-    nifty_df = yf.download("^NSEI", start=today, interval="2m")
-    st.write(nifty_df['Close'].iloc[-1])
-with sensex:
-    st.header("Sensex")
-    sensex_df = pd.DataFrame()
-    sensex_df = yf.download("^BSESN", start=today, interval="2m")
-    st.write(sensex_df['Close'].iloc[-1])
-    
-todays_stock, stocks, indicators = st.tabs(
-    ["Stock price for Today ", "Historical Price of Stock", "Indicators"])
+todays_stock, stocks, indicators, int_stocks = st.tabs(
+    ["Stock price for Today ", "Historical Price of Stock", "Indicators", "International Stocks"])
 
 with todays_stock:
     st.title("Today's Price of Stock")
@@ -86,12 +67,12 @@ with stocks:
             interval = "60m"
         elif diff.days > 365:
             interval = "1wk"
-        
+
         df_stock = yf.download(f"{stock}.NS", start=start_date,
                                end=end_date, interval=interval)
         df_stock.style.set_properties(**{'text-align': 'left'})
         st.write(df_stock)
-        st.write("The time interval for plotting of chart is :",interval)
+        st.write("The time interval for plotting of chart is :", interval)
         fig = make_subplots(rows=2, cols=1, shared_xaxes=True, vertical_spacing=0.03, row_heights=[
                             0.7, 0.3], specs=[[{"type": "candlestick"}], [{"type": "bar"}]])
         fig.update_xaxes(rangeslider_visible=False)
@@ -126,13 +107,12 @@ with stocks:
             interval = "60m"
         elif diff.days > 365:
             interval = "1wk"
-        
-        
+
         df_get_stock = yf.download(f"{stock}.NS", start=start_date,
                                    end=end_date+datetime.timedelta(days=1), interval=interval)
         df_get_stock.style.set_properties(**{'text-align': 'left'})
         st.write(df_get_stock)
-        st.write("The time interval for plotting of chart is :",interval)
+        st.write("The time interval for plotting of chart is :", interval)
         fig = make_subplots(rows=2, cols=1, shared_xaxes=True, vertical_spacing=0.03, row_heights=[
                             0.7, 0.3], specs=[[{"type": "candlestick"}], [{"type": "bar"}]])
         fig.update_xaxes(rangeslider_visible=False)
@@ -221,3 +201,46 @@ with indicators:
             go.Bar(x=df1.index, y=df1['Volume'], name='Volume'), row=2, col=1)
 
         st.plotly_chart(fig, use_container_width=True)
+
+with int_stocks:
+    international = pd.DataFrame()
+    today_date = datetime.date.today() + datetime.timedelta(days=1)
+    if today_date.weekday() == 5:
+        today_date = today_date - datetime.timedelta(days=1)
+        st.write("Market is closed ")
+    elif today_date.weekday() == 6:
+        today_date = today_date - datetime.timedelta(days=2)
+        st.write("Market is closed ")
+    stock_name = st.text_input("Enter a stock ticker symbol", "AAPL")
+    start_date = st.date_input("Starting date")
+    end_date = st.date_input("Ending date")
+    get_stock = st.button("Get the Stock Price")
+    if end_date < start_date:
+        st.error("Error: End date must fall after start date.")
+        
+    end_date = today_date
+    diff = end_date - start_date
+    interval = "1d"
+    if 180 > diff.days < 365 and diff.days > 90:
+        interval = "1d"
+    # bteween 30 days and 90 days interval is 90 minutes
+    elif 90 >= diff.days >= 30:
+        interval = "60m"
+    elif diff.days > 365:
+            interval = "1wk"
+    if get_stock:
+        international = international.ta.ticker(
+            stock_name, start=start_date, end=end_date+datetime.timedelta(days=1), interval=interval)
+        international = international.drop(columns=['Stock Splits', 'Dividends'])
+        st.write(international)
+        fig = make_subplots(rows=2, cols=1, shared_xaxes=True, vertical_spacing=0.03, row_heights=[
+            0.7, 0.3], specs=[[{"type": "candlestick"}], [{"type": "bar"}]])
+        fig.update_xaxes(rangeslider_visible=False)
+        fig.add_trace(go.Candlestick(x=international.index, open=international['Open'], high=international['High'],
+                                     low=international['Low'], close=international['Close'], name='market data'), row=1, col=1)
+        # bar chart
+        fig.add_trace(
+            go.Bar(x=international.index, y=international['Volume'], name='Volume'), row=2, col=1)
+    
+        st.plotly_chart(fig, use_container_width=True)
+    
