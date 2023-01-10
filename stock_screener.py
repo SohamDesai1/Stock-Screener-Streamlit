@@ -30,6 +30,12 @@ with todays_stock:
         df_today['% Change'] = df_today['Close'].pct_change()*100
         df_today['% Change'] = df_today['% Change'].round(2)
         st.write(df_today)
+        if df_today['% Change'].iloc[-1] > 0:
+            st.write("The stock is up by {}%".format(
+                df_today['% Change'].iloc[-1]))
+        else:
+            st.write("The stock is down by {}%".format(
+                df_today['% Change'].iloc[-1]))
         fig = make_subplots(rows=2, cols=1, shared_xaxes=True, vertical_spacing=0.03, row_heights=[
                             0.7, 0.3], specs=[[{"type": "candlestick"}], [{"type": "bar"}]])
         fig.update_xaxes(rangeslider_visible=False)
@@ -72,6 +78,12 @@ with stocks:
                                end=end_date, interval=interval)
         df_stock.style.set_properties(**{'text-align': 'left'})
         st.write(df_stock)
+        if df_today['% Change'].iloc[-1] > 0:
+            st.write("The stock is up by {}%".format(
+                df_today['% Change'].iloc[-1]))
+        else:
+            st.write("The stock is down by {}%".format(
+                df_today['% Change'].iloc[-1]))
         st.write("The time interval for plotting of chart is :", interval)
         fig = make_subplots(rows=2, cols=1, shared_xaxes=True, vertical_spacing=0.03, row_heights=[
                             0.7, 0.3], specs=[[{"type": "candlestick"}], [{"type": "bar"}]])
@@ -112,6 +124,12 @@ with stocks:
                                    end=end_date+datetime.timedelta(days=1), interval=interval)
         df_get_stock.style.set_properties(**{'text-align': 'left'})
         st.write(df_get_stock)
+        if df_today['% Change'].iloc[-1] > 0:
+            st.write("The stock is up by {}%".format(
+                df_today['% Change'].iloc[-1]))
+        else:
+            st.write("The stock is down by {}%".format(
+                df_today['% Change'].iloc[-1]))
         st.write("The time interval for plotting of chart is :", interval)
         fig = make_subplots(rows=2, cols=1, shared_xaxes=True, vertical_spacing=0.03, row_heights=[
                             0.7, 0.3], specs=[[{"type": "candlestick"}], [{"type": "bar"}]])
