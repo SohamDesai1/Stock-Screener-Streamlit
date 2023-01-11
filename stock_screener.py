@@ -8,7 +8,19 @@ from plotly.subplots import make_subplots
 
 st.title("Stock Price Screener and Analysis")
 pd.set_option('max_colwidth', 400)
-
+nifty,sensex = st.columns(2)
+today = datetime.date.today()
+with nifty:
+    st.header("Nifty 50")
+    nifty_df = pd.DataFrame()
+    nifty_df = yf.download("^NSEI", start=today, interval="2m")
+    st.write(nifty_df['Close'].iloc[-1])
+with sensex:
+    st.header("Sensex")
+    sensex_df = pd.DataFrame()
+    sensex_df = yf.download("^BSESN", start=today, interval="2m")
+    st.write(sensex_df['Close'].iloc[-1])
+    
 todays_stock, stocks, indicators, int_stocks = st.tabs(
     ["Stock price for Today ", "Historical Price of Stock", "Indicators", "International Stocks"])
 
