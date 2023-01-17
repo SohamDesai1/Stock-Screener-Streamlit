@@ -8,19 +8,35 @@ from plotly.subplots import make_subplots
 
 st.title("Stock Price Screener and Analysis")
 pd.set_option('max_colwidth', 400)
-nifty,sensex = st.columns(2)
+nifty, sensex = st.columns(2)
 today = datetime.date.today()
+yesterday = today - datetime.timedelta(days=1)
 with nifty:
     st.header("Nifty 50")
-    nifty_df = pd.DataFrame()
-    nifty_df = yf.download("^NSEI", start=today, interval="2m")
-    st.write(nifty_df['Close'].iloc[-1])
+    nifty_df_today = pd.DataFrame()
+    nifty_df_today = yf.download("^NSEI", start=today, interval="2m")
+    st.write(nifty_df_today['Close'].iloc[-1])
+    nifty_df_yesterday = yf.download("^NSEI", start=yesterday, end=today, interval="2m")
+    percent_change_nifty = (nifty_df_today['Close'].iloc[-1] - nifty_df_yesterday['Close'].iloc[-1]) / (nifty_df_today['Close'].iloc[-1]) * 100 
+    percent_change_nifty = round(percent_change_nifty, 2)
+    if percent_change_nifty > 0:
+        st.write("Nifty is up by {}%".format(percent_change_nifty))
+    else:
+        st.write("Nifty is down by {}%".format(percent_change_nifty))
+
 with sensex:
     st.header("Sensex")
     sensex_df = pd.DataFrame()
     sensex_df = yf.download("^BSESN", start=today, interval="2m")
     st.write(sensex_df['Close'].iloc[-1])
-    
+    sensex_df_yesterday = yf.download("^BSESN", start=yesterday, end=today, interval="2m")
+    percent_change_sensex = (sensex_df['Close'].iloc[-1] - sensex_df_yesterday['Close'].iloc[-1]) / (sensex_df['Close'].iloc[-1]) * 100
+    percent_change_sensex = round(percent_change_sensex, 2)
+    if percent_change_sensex > 0:
+        st.write("Sensex is up by {}%".format(percent_change_sensex))
+    else:
+        st.write("Sensex is down by {}%".format(percent_change_sensex))
+
 todays_stock, stocks, indicators, int_stocks = st.tabs(
     ["Stock price for Today ", "Historical Price of Stock", "Indicators", "International Stocks"])
 
@@ -42,12 +58,19 @@ with todays_stock:
         df_today['% Change'] = df_today['Close'].pct_change()*100
         df_today['% Change'] = df_today['% Change'].round(2)
         st.write(df_today)
-        if df_today['% Change'].iloc[-1] > 0:
-            st.write("The stock is up by {}%".format(
-                df_today['% Change'].iloc[-1]))
+        df_yesterday = yf.download(
+            f"{stock}.NS", start=yesterday,end=today, interval="2m")
+        df_yesterday['% Change'] = df_yesterday['Close'].pct_change()*100
+        df_yesterday['% Change'] = df_yesterday['% Change'].round(2)
+        st.write(df_yesterday)
+        # percentage change in stock price
+        percent_change = (df_today['Close'].iloc[-1] - df_yesterday['Close'].iloc[-1]) / (df_today['Close'].iloc[-1]) * 100 
+        percent_change = round(percent_change, 2)
+        if percent_change > 0:
+            st.write("The stock is up by {}%".format(percent_change))
         else:
-            st.write("The stock is down by {}%".format(
-                df_today['% Change'].iloc[-1]))
+            st.write("The stock is down by {}%".format(percent_change))
+
         fig = make_subplots(rows=2, cols=1, shared_xaxes=True, vertical_spacing=0.03, row_heights=[
                             0.7, 0.3], specs=[[{"type": "candlestick"}], [{"type": "bar"}]])
         fig.update_xaxes(rangeslider_visible=False)
@@ -247,7 +270,7 @@ with int_stocks:
     get_stock = st.button("Get the Stock Price")
     if end_date < start_date:
         st.error("Error: End date must fall after start date.")
-        
+
     end_date = today_date
     diff = end_date - start_date
     interval = "1d"
@@ -257,11 +280,12 @@ with int_stocks:
     elif 90 >= diff.days >= 30:
         interval = "60m"
     elif diff.days > 365:
-            interval = "1wk"
+        interval = "1wk"
     if get_stock:
         international = international.ta.ticker(
             stock_name, start=start_date, end=end_date+datetime.timedelta(days=1), interval=interval)
-        international = international.drop(columns=['Stock Splits', 'Dividends'])
+        international = international.drop(
+            columns=['Stock Splits', 'Dividends'])
         st.write(international)
         fig = make_subplots(rows=2, cols=1, shared_xaxes=True, vertical_spacing=0.03, row_heights=[
             0.7, 0.3], specs=[[{"type": "candlestick"}], [{"type": "bar"}]])
@@ -271,6 +295,5 @@ with int_stocks:
         # bar chart
         fig.add_trace(
             go.Bar(x=international.index, y=international['Volume'], name='Volume'), row=2, col=1)
-    
+
         st.plotly_chart(fig, use_container_width=True)
-    
