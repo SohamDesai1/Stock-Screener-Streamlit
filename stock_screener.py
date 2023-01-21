@@ -13,7 +13,6 @@ today = datetime.date.today()
 yesterday = today - datetime.timedelta(days=1)
 with nifty:
     st.header("Nifty 50")
-    nifty_df_today = pd.DataFrame()
     nifty_df_today = yf.download("^NSEI", start=today, interval="2m")
     st.write(nifty_df_today['Close'].iloc[-1])
     nifty_df_yesterday = yf.download("^NSEI", start=yesterday, end=today, interval="2m")
@@ -26,7 +25,6 @@ with nifty:
 
 with sensex:
     st.header("Sensex")
-    sensex_df = pd.DataFrame()
     sensex_df = yf.download("^BSESN", start=today, interval="2m")
     st.write(sensex_df['Close'].iloc[-1])
     sensex_df_yesterday = yf.download("^BSESN", start=yesterday, end=today, interval="2m")
