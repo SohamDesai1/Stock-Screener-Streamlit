@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 import datetime,time
 import yfinance as yf
-import pandas_ta as ta
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
@@ -19,8 +18,10 @@ elif yesterday.weekday() == 6:
     yesterday = yesterday - datetime.timedelta(days=2)
 with nifty:
     st.header("Nifty 50")
+    nifty_df_today = pd.DataFrame()
     nifty_df_today = yf.download("^NSEI", start=today, interval="2m")
     st.write(nifty_df_today['Close'].iloc[-1])
+    nifty_df_yesterday = pd.DataFrame()
     nifty_df_yesterday = yf.download(
         "^NSEI", start=yesterday, end=today, interval="2m")
     percent_change_nifty = (nifty_df_today['Close'].iloc[-1] - nifty_df_yesterday['Close'].iloc[-1]) / (nifty_df_today['Close'].iloc[-1]) * 100
@@ -40,6 +41,7 @@ with sensex:
     st.header("Sensex")
     sensex_df = yf.download("^BSESN", start=today, interval="2m")
     st.write(sensex_df['Close'].iloc[-1])
+    sensex_df_yesterday = pd.DataFrame()
     sensex_df_yesterday = yf.download(
         "^BSESN", start=yesterday, end=today, interval="2m")
     percent_change_sensex = (sensex_df['Close'].iloc[-1] - sensex_df_yesterday['Close'].iloc[-1]) / (sensex_df['Close'].iloc[-1]) * 100
