@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
-import datetime,time
+import datetime
+import time
 import yfinance as yf
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
@@ -24,38 +25,47 @@ with nifty:
     nifty_df_yesterday = pd.DataFrame()
     nifty_df_yesterday = yf.download(
         "^NSEI", start=yesterday, end=today, interval="2m")
-    percent_change_nifty = (nifty_df_today['Close'].iloc[-1] - nifty_df_yesterday['Close'].iloc[-1]) / (nifty_df_today['Close'].iloc[-1]) * 100
+    percent_change_nifty = (
+        nifty_df_today['Close'].iloc[-1] - nifty_df_yesterday['Close'].iloc[-1]) / (nifty_df_today['Close'].iloc[-1]) * 100
     percent_change_nifty = round(percent_change_nifty, 2)
 
     if datetime.time(15, 30) > datetime.datetime.now().time():
-        if percent_change_nifty > 0 :
+        if percent_change_nifty > 0:
             st.write("Nifty 50 Index is up by {}%".format(percent_change_nifty))
         else:
-            st.write("Nifty 50 Index is down by {}%".format(percent_change_nifty))
+            st.write("Nifty 50 Index is down by {}%".format(
+                percent_change_nifty))
     else:
-        if percent_change_nifty > 0 :
-            st.write("Nifty 50 Index was up by {}%".format(percent_change_nifty))
+        if percent_change_nifty > 0:
+            st.write("Nifty 50 Index was up by {}%".format(
+                percent_change_nifty))
         else:
-            st.write("Nifty 50 Index was down by {}%".format(percent_change_nifty))
+            st.write("Nifty 50 Index was down by {}%".format(
+                percent_change_nifty))
 with sensex:
     st.header("Sensex")
+    sensex_df = pd.DataFrame()
     sensex_df = yf.download("^BSESN", start=today, interval="2m")
     st.write(sensex_df['Close'].iloc[-1])
     sensex_df_yesterday = pd.DataFrame()
     sensex_df_yesterday = yf.download(
         "^BSESN", start=yesterday, end=today, interval="2m")
-    percent_change_sensex = (sensex_df['Close'].iloc[-1] - sensex_df_yesterday['Close'].iloc[-1]) / (sensex_df['Close'].iloc[-1]) * 100
+    percent_change_sensex = (
+        sensex_df['Close'].iloc[-1] - sensex_df_yesterday['Close'].iloc[-1]) / (sensex_df['Close'].iloc[-1]) * 100
     percent_change_sensex = round(percent_change_sensex, 2)
     if datetime.time(15, 30) > datetime.datetime.now().time():
-        if percent_change_sensex > 0 :
+        if percent_change_sensex > 0:
             st.write("Sensex Index is up by {}%".format(percent_change_sensex))
         else:
-            st.write("Sensex Index is down by {}%".format(percent_change_sensex))
+            st.write("Sensex Index is down by {}%".format(
+                percent_change_sensex))
     else:
-        if percent_change_sensex > 0 :
-            st.write("Sensex Index was up by {}%".format(percent_change_sensex))
+        if percent_change_sensex > 0:
+            st.write("Sensex Index was up by {}%".format(
+                percent_change_sensex))
         else:
-            st.write("Sensex Index was down by {}%".format(percent_change_sensex))
+            st.write("Sensex Index was down by {}%".format(
+                percent_change_sensex))
 todays_stock, stocks, indicators, int_stocks = st.tabs(
     ["Stock price for Today ", "Historical Price of Stock", "Indicators", "International Stocks"])
 
@@ -73,15 +83,18 @@ with todays_stock:
 
     if Today_stock:
         start_date = today
+        df_today = pd.DataFrame()
         df_today = yf.download(f"{stock}.NS", start=start_date, interval="2m")
         df_today['% Change'] = df_today['Close'].pct_change()*100
         df_today['% Change'] = df_today['% Change'].round(2)
         st.write(df_today)
+        df_yesterday = pd.DataFrame()
         df_yesterday = yf.download(
             f"{stock}.NS", start=yesterday, end=today, interval="2m")
         df_yesterday['% Change'] = df_yesterday['Close'].pct_change()*100
         df_yesterday['% Change'] = df_yesterday['% Change'].round(2)
-        percent_change = (df_today['Close'].iloc[-1] - df_yesterday['Close'].iloc[-1]) / (df_today['Close'].iloc[-1]) * 100
+        percent_change = (
+            df_today['Close'].iloc[-1] - df_yesterday['Close'].iloc[-1]) / (df_today['Close'].iloc[-1]) * 100
         percent_change = round(percent_change, 2)
         if percent_change > 0:
             st.write("The stock is up by {}%".format(percent_change))
@@ -125,6 +138,7 @@ with stocks:
         elif diff.days > 365:
             interval = "1wk"
 
+        df_stock = pd.DataFrame()
         df_stock = yf.download(f"{stock}.NS", start=start_date,
                                end=end_date, interval=interval)
         df_stock.style.set_properties(**{'text-align': 'left'})
@@ -171,6 +185,7 @@ with stocks:
         elif diff.days > 365:
             interval = "1wk"
 
+        df_get_stock = pd.DataFrame()
         df_get_stock = yf.download(f"{stock}.NS", start=start_date,
                                    end=end_date+datetime.timedelta(days=1), interval=interval)
         df_get_stock.style.set_properties(**{'text-align': 'left'})
