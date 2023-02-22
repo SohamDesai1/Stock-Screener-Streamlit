@@ -313,6 +313,7 @@ with int_stocks:
     elif diff.days > 365:
         interval = "1wk"
     if get_stock:
+        international = pd.DataFrame()
         international = international.ta.ticker(
             stock_name, start=start_date, end=end_date+datetime.timedelta(days=1), interval=interval)
         international = international.drop(
